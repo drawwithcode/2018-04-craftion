@@ -1,48 +1,88 @@
-function preload() {
-  // put preload code here
+var numSegments = 9,
+  x = [],
+  y = [],
+  angle = [],
+  segLength = 75,
+  targetX, targetY;
+
+for (var i = 0; i < numSegments; i++) {
+  x[i] = 0;
+  y[i] = 0;
+  angle[i] = 0;
 }
 
-var balls = [];
 
 function setup() {
-  // put setup code here
-
   createCanvas(windowWidth, windowHeight);
-
-  var ballNumber = 50;
-  for (var i = 0; i < ballNumber; i++) {
-
-    var myBall = new Ball(random(0, width), random(0, height), 10);
-    myBall.diameter= random(10,50);
-    myBall.speed= random(1,5);
-    myBall.color= color(random(255),random(255),random(255));
+  strokeWeight(10);
 
 
-    balls.push(myBall);
+  drop1 = new waterDrops();
+  drop2 = new waterDrops();
+  drop3 = new waterDrops();
+  drop4 = new waterDrops();
 
 
+  x[x.length - 1] = width / 2; // Set base x-coordinate
+  y[x.length - 1] = height; // Set base y-coordinate
+}
+
+function draw() {
+  background(0);
+  pop();
+  fill('blue');
+  stroke('#56B7FF');
+  drop1.move();
+  drop1.display();
+  drop2.move();
+  drop2.display();
+  drop3.move();
+  drop3.display();
+  drop4.move();
+  drop4.display();
+
+  push();
+  reachSegment(0, mouseX, mouseY);
+  for (var i = 1; i < numSegments; i++) {
+    reachSegment(i, targetX, targetY);
+  }
+  for (var j = x.length - 1; j >= 1; j--) {
+    positionSegment(j, j - 1);
+  }
+  for (var k = 0; k < x.length; k++) {
+    segment(x[k], y[k], angle[k], (k + 1) * 2);
   }
 
 }
 
-function draw() {
-  // put drawing code here
-    background(255,255,255,100);
-for( var j=0; j< balls.length; j++){
-
-  balls[j].move();
-  balls[j].display();
-  balls[j].diameter+=1;
+function positionSegment(a, b) {
+  x[b] = x[a] + cos(angle[a]) * segLength;
+  y[b] = y[a] + sin(angle[a]) * segLength;
 }
 
+function reachSegment(i, xin, yin) {
+  var dx = xin - x[i];
+  var dy = yin - y[i];
+  angle[i] = atan2(dy, dx);
+  targetX = xin - cos(angle[i]) * segLength;
+  targetY = yin - sin(angle[i]) * segLength;
 }
 
-function Ball(_x, _y, _diameter) {
-  this.x = _x;
-  this.y = _y;
-  this.diameter = _diameter;
-  this.color = color('blue');
-  this.speed = 2;
+function segment(x, y, a, sw) {
+  strokeWeight(sw);
+  push();
+  translate(x, y);
+  rotate(a);
+  stroke('#FF91CB');
+  line(0, 0, segLength, 0);
+  pop();
+}
+
+function waterDrops() {
+  this.x = random(width);
+  this.y = random(height);
+  this.diameter = random(30, 50);
+  this.speed = random(1, 5);
   var yDir = 1;
   var xDir = 1;
   this.display = function() {
@@ -61,4 +101,12 @@ function Ball(_x, _y, _diameter) {
       xDir = xDir * -1;
     }
   }
+
+  this.display = function() {
+    ellipse(this.x, this.y, this.diameter, this.diameter);
+  };
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
