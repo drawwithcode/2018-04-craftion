@@ -1,8 +1,8 @@
-var numSegments = 9,
+var numSegments = 10,
   x = [],
   y = [],
   angle = [],
-  segLength = 75,
+  segLength = 80,
   targetX, targetY;
 
 for (var i = 0; i < numSegments; i++) {
